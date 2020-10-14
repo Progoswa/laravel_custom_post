@@ -19,8 +19,9 @@ class HomeController extends Controller
     public function store(FormHomeRequest $request)
     {
         if (Eraser::create($request->validated())) {
-            $ruta = URL::temporarySignedRoute('Verificacion', now()->addMinutes(3), ['mail' => $request->mail]);
-            self::sendmail($ruta);
+            $ruta = URL::temporarySignedRoute('Verificacion', now()->addMinutes(2280), ['mail' => $request->mail]);
+            $mail = $request->mail;
+            self::sendmail($ruta, $mail);
             return redirect()->route('Home')->with('info','Mensaje enviado, por favor verifique su correo electrónico');
         }else{
             return redirect()->route('Home')->with('info','A ocurrido un error enviando el correo de verificación');
@@ -41,10 +42,10 @@ class HomeController extends Controller
         }
     }
 
-    public function sendmail($ruta)
+    public function sendmail($ruta, $mail)
     {
         $data = ['url' => $ruta];
-        Mail::to('progoswa@gmail.com')->send(new SendMail($data));
+        Mail::to($mail)->send(new SendMail($data));
     }
 
     public function to_post($finderaser)
